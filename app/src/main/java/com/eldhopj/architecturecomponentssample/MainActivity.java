@@ -6,6 +6,7 @@ package com.eldhopj.architecturecomponentssample;
  *          Create a @DAO interface (TaskDao)
  *          Create a Database abstract class (AppDatabase)
  *          Saving into DB (AddTaskActivity)
+ *          Retriving from DB ( MainActivity)
  *          */
 
 import android.content.Intent;

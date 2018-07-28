@@ -1,5 +1,5 @@
 package com.eldhopj.architecturecomponentssample;
-
+/**This class is for Saving into DB*/
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
