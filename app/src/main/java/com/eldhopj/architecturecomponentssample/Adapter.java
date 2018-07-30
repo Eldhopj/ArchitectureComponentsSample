@@ -138,5 +138,10 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder>{
         mTaskEntries = taskEntries;
         notifyDataSetChanged();
     }
+
+    //Retrieve list of task entry objects from our adapter
+    public List<TaskDBModelClass> getTasks() {
+        return mTaskEntries;
+    }
 }
 
