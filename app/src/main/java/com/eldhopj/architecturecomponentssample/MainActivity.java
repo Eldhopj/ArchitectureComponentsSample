@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.eldhopj.architecturecomponentssample.DataBase.AppDatabase;
+import com.eldhopj.architecturecomponentssample.DataBase.AppExecutors;
 import com.eldhopj.architecturecomponentssample.DataBase.TaskDBModelClass;
 
 import java.util.List;
@@ -67,10 +68,25 @@ public class MainActivity extends AppCompatActivity implements Adapter.OnItemCli
         });
     }
 
+    /**Loading Data from database and setting into an adapter in here*/
     @Override
     protected void onStart() {
         super.onStart();
-        mAdapter.setTasks(mDb.taskDao().loadAllTasks()); /**Loading Data from database and setting into an adapter in here*/
+
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                final List<TaskDBModelClass> tasks = mDb.taskDao().loadAllTasks();
+
+                // NOTE : We will be able to simplify this once we learn more about Android Architecture Components
+                runOnUiThread(new Runnable() { //We need to use the runOnUiThread method to wrap setting tasks to the adapter
+                    @Override
+                    public void run() {
+                        mAdapter.setTasks(tasks);
+                    }
+                });
+            }
+        });
     }
 
     @Override
