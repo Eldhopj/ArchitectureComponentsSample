@@ -9,7 +9,12 @@ import android.arch.persistence.room.Update;
 
 import java.util.List;
 
-@Dao/**Data Access Object*/
+/**
+ * @see <a href="https://github.com/googlecodelabs/android-persistence/blob/master/app/src/main/java/com/example/android/persistence/codelab/db/UserDao.java"/>
+ */
+
+@Dao
+/**Data Access Object*/
 public interface TaskDao {
     @Query("SELECT * FROM task ORDER BY priority")
     List<TaskDBModelClass> loadAllTasks();
@@ -22,4 +27,7 @@ public interface TaskDao {
 
     @Delete
     void deleteTask(TaskDBModelClass taskEntry);
+
+    @Query("SELECT * FROM task WHERE id = :id") // The query for this method should get all the data for that id
+    TaskDBModelClass loadTaskById(int id);
 }

@@ -11,9 +11,15 @@ package com.eldhopj.architecturecomponentssample;
  * Commit 3:
  *          Making DB trans in a background thread using Executors
  *
- * Commit 4:
+ * Commit 4: Delete
  *          Deleting from DB using swipe gestures
- *          */
+ *
+ * Commit 5: Update (steps below)
+ *          Get the Id of the item to be updated through OnItemClick method
+ *          Pass the id to the task activity and from there to loadTaskById
+ *          populate the data of that ID
+ *          Update the data's on that ID using updateTask method
+ * */
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -41,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements Adapter.OnItemCli
     private RecyclerView mRecyclerView;
     private List<TaskDBModelClass> mTaskEntries;
     private Adapter mAdapter;
+
+    public static final String EXTRA_TASK_ID = "itemID";
 
     private AppDatabase mDb;
     @Override
@@ -132,11 +140,10 @@ public class MainActivity extends AppCompatActivity implements Adapter.OnItemCli
         });
     }
     @Override
-    public void onItemClick(int position) {
-        try {
-            TaskDBModelClass clickedItem = mTaskEntries.get(position); // We get the item at the clicked position out of our list items
-        }catch (NullPointerException e){
-            Log.d(TAG, "onItemClick: " + e.getMessage());
-        }
+    public void onItemClick(int itemId) {
+        Intent intent = new Intent(MainActivity.this, AddTaskActivity.class);
+        intent.putExtra(EXTRA_TASK_ID, itemId); /**ID of the item to be updated*/
+        Log.d(TAG, "onItemClick: "+String.valueOf(itemId));
+        startActivity(intent);
     }
 }

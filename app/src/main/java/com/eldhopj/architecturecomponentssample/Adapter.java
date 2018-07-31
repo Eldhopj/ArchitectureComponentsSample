@@ -30,10 +30,10 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder>{
         this.mContext = mContext;
     }
 
-    // interface will forward our click from adapter to our main activity
+    // interface will forward our click and data from adapter to our main activity
 
     public interface OnItemClickListener {
-        void onItemClick(int position);
+        void onItemClick(int elementId);
     }
     public void setOnItemClickListener(OnItemClickListener listener) {
         mListener = listener;
@@ -114,17 +114,14 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder>{
             updatedAtView = itemView.findViewById(R.id.taskUpdatedAt);
             priorityView = itemView.findViewById(R.id.priorityTextView);
 
-            //Assigning on click listener on the item
+            //Assigning on click listener on the item and passing the ID value of the item
             itemView.setOnClickListener(new View.OnClickListener() { // we can handle the click as like we do in normal
                 @Override
                 public void onClick(View v) {
                     if (mListener != null) {
-                        int position = getAdapterPosition(); // Get the index of the view holder
-                        if (position != RecyclerView.NO_POSITION) { // Makes sure this position is still valid
-                            mListener.onItemClick(position); // we catch the click on the item view then pass it over the interface and then to our activity
-                        }
+                        int elementId = mTaskEntries.get(getAdapterPosition()).getId(); /** Get the id of the item on that position*/
+                        mListener.onItemClick(elementId); // we catch the id on the item view then pass it over the interface and then to our activity
                     }
-
                 }
             });
         }
