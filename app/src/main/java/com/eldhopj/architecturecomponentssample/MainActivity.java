@@ -19,10 +19,17 @@ package com.eldhopj.architecturecomponentssample;
  *          Pass the id to the task activity and from there to loadTaskById
  *          populate the data of that ID
  *          Update the data's on that ID using updateTask method
+ *
+ * Commit 6: LiveData
+ *          Add dependencies
+ *          Note : LiveData is for to observe changes on the DB, So operations like insert,update or delete we don't need to use LiveData
  * */
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
@@ -71,6 +78,8 @@ public class MainActivity extends AppCompatActivity implements Adapter.OnItemCli
 
         mAdapter.setOnItemClickListener(this); // For item onclick
 
+        loadData();/**Function to Loading Data from database and setting into an adapter*/
+
 
         /**deleting of data from DB*/
             /*
@@ -98,7 +107,9 @@ public class MainActivity extends AppCompatActivity implements Adapter.OnItemCli
 
                         mDb.taskDao().deleteTask(tasks.get(position)); /** Call deleteTask in the taskDao with the task at that position*/
 
-                        loadData(); //Call loadData method to refresh the UI
+                        /*loadData(); //Call loadData method to refresh the UI
+                        * NOTE : we can remove this , Hence LiveData lessons for any changes it will auto update the UI (observer)*/
+
                     }
                 });
             }
@@ -116,26 +127,18 @@ public class MainActivity extends AppCompatActivity implements Adapter.OnItemCli
         });
     }
 
-    /**Loading Data from database and setting into an adapter in here*/
-    @Override
-    protected void onStart() {
-        super.onStart();
-        loadData();
-    }
-
     private void loadData() {
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+        /**Query to load all data*/
+        final LiveData<List<TaskDBModelClass>> tasks = mDb.taskDao().loadAllTasks(); /**Getting LiveData object*/
+        // NOTE : LiveData by default runs outside the main thread, so we remove the executors.
+        /** @param lifecycleOwner ->
+         *  @param Observer */
+        tasks.observe(this, new Observer<List<TaskDBModelClass>>() { /**Calling its Observe method*/
             @Override
-            public void run() {
-                final List<TaskDBModelClass> tasks = mDb.taskDao().loadAllTasks(); /**Query to load all data*/
-
-                // NOTE : We will be able to simplify this once we learn more about Android Architecture Components
-                runOnUiThread(new Runnable() { //We need to use the runOnUiThread method to wrap setting tasks to the adapter
-                    @Override
-                    public void run() {
-                        mAdapter.setTasks(tasks);
-                    }
-                });
+            /*NOTE : onChanged runs on the main thread , So we remove runOnUiThread
+                Here the data change in the db will be updated to the recycler view*/
+            public void onChanged(@Nullable List<TaskDBModelClass> taskDBModelClasses) { // interface to implement onChange method
+                mAdapter.setTasks(taskDBModelClasses);
             }
         });
     }
