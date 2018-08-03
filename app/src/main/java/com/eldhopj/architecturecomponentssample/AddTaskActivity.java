@@ -3,8 +3,8 @@ package com.eldhopj.architecturecomponentssample;
  *
  * Commit 5 : Updating the values*/
 
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -17,6 +17,8 @@ import android.widget.RadioGroup;
 import com.eldhopj.architecturecomponentssample.DataBase.AppDatabase;
 import com.eldhopj.architecturecomponentssample.DataBase.AppExecutors;
 import com.eldhopj.architecturecomponentssample.DataBase.TaskDBModelClass;
+import com.eldhopj.architecturecomponentssample.ViewModels.AddTaskViewModel;
+import com.eldhopj.architecturecomponentssample.ViewModels.ViewModelFactory;
 
 import java.util.Date;
 
@@ -52,17 +54,19 @@ public class AddTaskActivity extends AppCompatActivity {
             mTaskId = intent.getIntExtra(EXTRA_TASK_ID,-1);
             if (mTaskId != DEFAULT_TASK_ID) { // check whether to update or not
                 // populate the UI
-                /**loadTaskById method is to retrieve the data belongs to id, mTaskId*/
-                final LiveData<TaskDBModelClass> task = mDb.taskDao().loadTaskById(mTaskId);/**Getting LiveData object*/
-                // NOTE : LiveData by default runs outside the main thread, so we remove the executors.
+
+                /**Fetching the task values using LiveData*/
+                ViewModelFactory factory = new ViewModelFactory(mDb, mTaskId); //Declare a AddTaskViewModelFactory using mDb and mTaskId
+                final AddTaskViewModel viewModel
+                        = ViewModelProviders.of(this, factory).get(AddTaskViewModel.class); // we are passing the factory as a params
                 /** @param lifecycleOwner ->
                  *  @param Observer */
-                task.observe(this, new Observer<TaskDBModelClass>() { /**Calling its Observe method*/
+                viewModel.getTask().observe(this, new Observer<TaskDBModelClass>() { /**Calling its Observe method*/
                 @Override
                     /*NOTE : onChanged runs on the main thread , So we remove runOnUiThread
                         Here the data change in the db will be updated to the recycler view*/
                 public void onChanged(@Nullable TaskDBModelClass taskDBModelClass) {// interface to implement onChange method
-                    task.removeObserver(this); // As we don't need lesson for changes continuous,So, we remove the observer
+                    viewModel.getTask().removeObserver(this); // As we don't need lesson for changes continuous,So, we remove the observer
                     populateUI(taskDBModelClass);
                 }
                 });

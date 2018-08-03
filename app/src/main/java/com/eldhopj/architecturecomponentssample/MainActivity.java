@@ -23,10 +23,15 @@ package com.eldhopj.architecturecomponentssample;
  * Commit 6: LiveData
  *          Add dependencies
  *          Note : LiveData is for to observe changes on the DB, So operations like insert,update or delete we don't need to use LiveData
+ *
+ * Commit 7: ViewModel
+ *          ViewModel helps data to survive after a configuration changes and prevents the memory leaks
+ *          Define the ViewModel classes , in view model class the data transactions are done because the lifecycle of ViewModel class is until the activity is destroyed
+ *          ViewModelFactory class is used when we need to pass variables into ViewModel, we needed to pass the ID to the LoadTaskById() method in AddTaskViewModel class
  * */
 
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -42,6 +47,7 @@ import android.view.View;
 import com.eldhopj.architecturecomponentssample.DataBase.AppDatabase;
 import com.eldhopj.architecturecomponentssample.DataBase.AppExecutors;
 import com.eldhopj.architecturecomponentssample.DataBase.TaskDBModelClass;
+import com.eldhopj.architecturecomponentssample.ViewModels.MainViewModel;
 
 import java.util.List;
 
@@ -78,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements Adapter.OnItemCli
 
         mAdapter.setOnItemClickListener(this); // For item onclick
 
-        loadData();/**Function to Loading Data from database and setting into an adapter*/
+        loadDataFromViewModel();/**Function to Loading Data from database and setting into an adapter*/
 
 
         /**deleting of data from DB*/
@@ -103,12 +109,12 @@ public class MainActivity extends AppCompatActivity implements Adapter.OnItemCli
                     @Override
                     public void run() {
                         int position = viewHolder.getAdapterPosition();
-                        List<TaskDBModelClass> tasks = mAdapter.getTasks();
+                        List<TaskDBModelClass> tasks = mAdapter.getTasks(); //for getting all fields
 
                         mDb.taskDao().deleteTask(tasks.get(position)); /** Call deleteTask in the taskDao with the task at that position*/
 
                         /*loadData(); //Call loadData method to refresh the UI
-                        * NOTE : we can remove this , Hence LiveData lessons for any changes it will auto update the UI (observer)*/
+                         * NOTE : we can remove this , Hence LiveData lessons for any changes it will auto update the UI (observer)*/
 
                     }
                 });
@@ -127,19 +133,19 @@ public class MainActivity extends AppCompatActivity implements Adapter.OnItemCli
         });
     }
 
-    private void loadData() {
-        /**Query to load all data*/
-        final LiveData<List<TaskDBModelClass>> tasks = mDb.taskDao().loadAllTasks(); /**Getting LiveData object*/
-        // NOTE : LiveData by default runs outside the main thread, so we remove the executors.
-        /** @param lifecycleOwner ->
-         *  @param Observer */
-        tasks.observe(this, new Observer<List<TaskDBModelClass>>() { /**Calling its Observe method*/
-            @Override
+    /**Loading data using LiveData*/
+    private void loadDataFromViewModel() {
+        MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class); /** View Model providers*/
+        /** @param lifecycleOwner -> Objects which have an LifeCycle eg: Activities and Fragments
+         *  @param Observer -> Observes the lifeCycleOwner */
+        viewModel.getTasks().observe(this, new Observer<List<TaskDBModelClass>>() { /**Calling its Observe method*/
+        @Override
             /*NOTE : onChanged runs on the main thread , So we remove runOnUiThread
                 Here the data change in the db will be updated to the recycler view*/
-            public void onChanged(@Nullable List<TaskDBModelClass> taskDBModelClasses) { // interface to implement onChange method
-                mAdapter.setTasks(taskDBModelClasses);
-            }
+        public void onChanged(@Nullable List<TaskDBModelClass> taskDBModelClasses) { // interface to implement onChange method
+            Log.d(TAG, "Loading data from DB via LiveData in ViewModel");
+            mAdapter.setTasks(taskDBModelClasses);
+        }
         });
     }
     @Override
