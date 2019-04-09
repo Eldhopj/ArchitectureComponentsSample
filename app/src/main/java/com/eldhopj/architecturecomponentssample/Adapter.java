@@ -10,14 +10,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.eldhopj.architecturecomponentssample.DataBase.TaskDBModelClass;
+import com.eldhopj.architecturecomponentssample.DataBase.TaskDBEntity;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 
 public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder>{
-    private List<TaskDBModelClass> mTaskEntries;
+    private List<TaskDBEntity> mTaskEntries;
     private Context mContext;
     private OnItemClickListener mListener; // Listener for the OnItemClickListener interface
 
@@ -25,7 +25,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder>{
     private SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault()); // Date formatter
 
 
-    public Adapter(List<TaskDBModelClass> mTaskEntries, Context mContext) {
+    public Adapter(List<TaskDBEntity> mTaskEntries, Context mContext) {
         this.mTaskEntries = mTaskEntries;
         this.mContext = mContext;
     }
@@ -50,7 +50,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder>{
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {//populate the data into the list_item (View Holder), as we scroll
         //Binding data to the list_item
-        TaskDBModelClass taskEntry = mTaskEntries.get(position);
+        TaskDBEntity taskEntry = mTaskEntries.get(position);
 
         //Getting value
         String description = taskEntry.getDescription();
@@ -131,13 +131,13 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder>{
      * When data changes, this method updates the list of taskEntries
      * and notifies the adapter to use the new values on it
      */
-    public void setTasks(List<TaskDBModelClass> taskEntries) {
+    public void setTasks(List<TaskDBEntity> taskEntries) {
         mTaskEntries = taskEntries;
         notifyDataSetChanged();
     }
 
     //Retrieve list of task entry objects from our adapter
-    public List<TaskDBModelClass> getTasks() {
+    public List<TaskDBEntity> getTasks() {
         return mTaskEntries;
     }
 }

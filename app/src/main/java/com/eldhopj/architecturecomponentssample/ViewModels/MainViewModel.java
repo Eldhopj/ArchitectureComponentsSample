@@ -7,7 +7,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.eldhopj.architecturecomponentssample.DataBase.AppDatabase;
-import com.eldhopj.architecturecomponentssample.DataBase.TaskDBModelClass;
+import com.eldhopj.architecturecomponentssample.DataBase.TaskDBEntity;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ public class MainViewModel extends AndroidViewModel { // extends view model
     private static final String TAG = "MainViewModel";
 
     /**We are using this ViewModel to cache our list of task entry objects wrapped in a live data object*/
-    private LiveData<List<TaskDBModelClass>> tasks;
+    private LiveData<List<TaskDBEntity>> tasks;
 
     public MainViewModel(@NonNull Application application) {
         super(application);
@@ -27,7 +27,7 @@ public class MainViewModel extends AndroidViewModel { // extends view model
         tasks = database.taskDao().loadAllTasks();// Get the instance of our DB and call the LoadAllTasks() method
     }
 
-    public LiveData<List<TaskDBModelClass>> getTasks() {
+    public LiveData<List<TaskDBEntity>> getTasks() {
         return tasks;
     }
 }

@@ -16,7 +16,7 @@ import android.widget.RadioGroup;
 
 import com.eldhopj.architecturecomponentssample.DataBase.AppDatabase;
 import com.eldhopj.architecturecomponentssample.DataBase.AppExecutors;
-import com.eldhopj.architecturecomponentssample.DataBase.TaskDBModelClass;
+import com.eldhopj.architecturecomponentssample.DataBase.TaskDBEntity;
 import com.eldhopj.architecturecomponentssample.ViewModels.AddTaskViewModel;
 import com.eldhopj.architecturecomponentssample.ViewModels.ViewModelFactory;
 
@@ -61,13 +61,13 @@ public class AddTaskActivity extends AppCompatActivity {
                         = ViewModelProviders.of(this, factory).get(AddTaskViewModel.class); // we are passing the factory as a params
                 /** @param lifecycleOwner ->
                  *  @param Observer */
-                viewModel.getTask().observe(this, new Observer<TaskDBModelClass>() { /**Calling its Observe method*/
+                viewModel.getTask().observe(this, new Observer<TaskDBEntity>() { /**Calling its Observe method*/
                 @Override
                     /*NOTE : onChanged runs on the main thread , So we remove runOnUiThread
                         Here the data change in the db will be updated to the recycler view*/
-                public void onChanged(@Nullable TaskDBModelClass taskDBModelClass) {// interface to implement onChange method
+                public void onChanged(@Nullable TaskDBEntity taskDBEntity) {// interface to implement onChange method
                     viewModel.getTask().removeObserver(this); // As we don't need lesson for changes continuous,So, we remove the observer
-                    populateUI(taskDBModelClass);
+                    populateUI(taskDBEntity);
                 }
                 });
             }
@@ -85,7 +85,7 @@ public class AddTaskActivity extends AppCompatActivity {
 
         /**Saving into database*/
         // Make taskEntry final so it is visible inside the run method
-        final TaskDBModelClass taskEntry = new TaskDBModelClass(description, priority, date); // passing value into model class
+        final TaskDBEntity taskEntry = new TaskDBEntity(description, priority, date); // passing value into model class
         AppExecutors.getInstance().diskIO().execute(new Runnable() { // Enables DB tans in a background thread
             @Override
             public void run() {
@@ -130,7 +130,7 @@ public class AddTaskActivity extends AppCompatActivity {
         }
     }
 
-    private void populateUI(TaskDBModelClass task) {
+    private void populateUI(TaskDBEntity task) {
         //Check whether the task is null
         if (task == null) {
             return;

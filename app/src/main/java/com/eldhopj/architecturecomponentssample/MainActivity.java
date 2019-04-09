@@ -46,7 +46,7 @@ import android.view.View;
 
 import com.eldhopj.architecturecomponentssample.DataBase.AppDatabase;
 import com.eldhopj.architecturecomponentssample.DataBase.AppExecutors;
-import com.eldhopj.architecturecomponentssample.DataBase.TaskDBModelClass;
+import com.eldhopj.architecturecomponentssample.DataBase.TaskDBEntity;
 import com.eldhopj.architecturecomponentssample.ViewModels.MainViewModel;
 
 import java.util.List;
@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements Adapter.OnItemCli
     private static final String TAG = "MainActivity";
     //Define the variables
     private RecyclerView mRecyclerView;
-    private List<TaskDBModelClass> mTaskEntries;
+    private List<TaskDBEntity> mTaskEntries;
     private Adapter mAdapter;
 
     public static final String EXTRA_TASK_ID = "itemID";
@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements Adapter.OnItemCli
                     @Override
                     public void run() {
                         int position = viewHolder.getAdapterPosition();
-                        List<TaskDBModelClass> tasks = mAdapter.getTasks(); //for getting all fields
+                        List<TaskDBEntity> tasks = mAdapter.getTasks(); //for getting all fields
 
                         mDb.taskDao().deleteTask(tasks.get(position)); /** Call deleteTask in the taskDao with the task at that position*/
 
@@ -138,13 +138,13 @@ public class MainActivity extends AppCompatActivity implements Adapter.OnItemCli
         MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class); /** View Model providers*/
         /** @param lifecycleOwner -> Objects which have an LifeCycle eg: Activities and Fragments
          *  @param Observer -> Observes the lifeCycleOwner */
-        viewModel.getTasks().observe(this, new Observer<List<TaskDBModelClass>>() { /**Calling its Observe method*/
+        viewModel.getTasks().observe(this, new Observer<List<TaskDBEntity>>() { /**Calling its Observe method*/
         @Override
             /*NOTE : onChanged runs on the main thread , So we remove runOnUiThread
                 Here the data change in the db will be updated to the recycler view*/
-        public void onChanged(@Nullable List<TaskDBModelClass> taskDBModelClasses) { // interface to implement onChange method
+        public void onChanged(@Nullable List<TaskDBEntity> taskDBEntities) { // interface to implement onChange method
             Log.d(TAG, "Loading data from DB via LiveData in ViewModel");
-            mAdapter.setTasks(taskDBModelClasses);
+            mAdapter.setTasks(taskDBEntities);
         }
         });
     }

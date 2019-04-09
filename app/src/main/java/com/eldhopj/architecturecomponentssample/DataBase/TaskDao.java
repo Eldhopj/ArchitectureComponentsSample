@@ -18,20 +18,24 @@ import java.util.List;
  */
 
 @Dao
-/**Data Access Object*/
+/**Data Access Object
+ * NOTE : Its recommenced to use different DAO interfaces for different set of operations*/
 public interface TaskDao {
     @Query("SELECT * FROM task ORDER BY priority")
-    LiveData<List<TaskDBModelClass>> loadAllTasks(); // wrap the retuning object with live data
+    LiveData<List<TaskDBEntity>> loadAllTasks(); // wrap the retuning object with live data
 
+    //Inserting into DB
     @Insert
-    void insertTask(TaskDBModelClass taskEntry);
+    void insertTask(TaskDBEntity taskEntry);
 
+    //Updating DB values
     @Update(onConflict = OnConflictStrategy.REPLACE) // to replace in-case of any conflicts
-    void updateTask(TaskDBModelClass taskEntry);
+    void updateTask(TaskDBEntity taskEntry);
 
+    //Deleting DB values
     @Delete
-    void deleteTask(TaskDBModelClass taskEntry);
+    void deleteTask(TaskDBEntity taskEntry);
 
     @Query("SELECT * FROM task WHERE id = :id") // The query for this method should get all the data for that id
-    LiveData<TaskDBModelClass> loadTaskById(int id); // wrap the retuning object with live data
+    LiveData<TaskDBEntity> loadTaskById(int id); // Observe the object , so if there is any changes in the table this value will be auto updated and the activity will be notified
 }

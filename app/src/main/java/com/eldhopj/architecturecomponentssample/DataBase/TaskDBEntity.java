@@ -13,31 +13,34 @@ import android.arch.persistence.room.PrimaryKey;
 import java.util.Date;
 
 @Entity(tableName = "task")/**Create a database named task
- *      Note : if we didn't give "(tableName = "task")" the db name will be the name of the model class ie,"TaskDBModelClass"*/
+ *      Note : if we didn't give "(tableName = "task")" the db name will be "TaskDBEntity"*/
 
-public class TaskDBModelClass {
+public class TaskDBEntity {
     // each of the variables are associated with the column names in the db
-    // Note : @ignore annotation is used to remove the element from Room's processing logic
     @PrimaryKey (autoGenerate = true) /**Setting up id as primary key and make it autoGenerate so, we no need to do it manually*/
     private int id;
+
     private String description;
     private int priority;
-    @ColumnInfo(name = "updated_at") /**Db name will be "updated_at" */
+    @ColumnInfo(name = "updated_at") /**column name will be "updated_at" */
     private Date updatedAt;
 
+    // Note : @ignore annotation is used to remove the element from Room's processing logic
     @Ignore  // We add @Ignore to first constructor so it uses second constructor
-    public TaskDBModelClass(String description, int priority, Date updatedAt) {
+    public TaskDBEntity(String description, int priority, Date updatedAt) {
         this.description = description;
         this.priority = priority;
         this.updatedAt = updatedAt;
     }
 
-    public TaskDBModelClass(int id, String description, int priority, Date updatedAt) {
+    public TaskDBEntity(int id, String description, int priority, Date updatedAt) {
         this.id = id;
         this.description = description;
         this.priority = priority;
         this.updatedAt = updatedAt;
     }
+
+    // Getter and Setter methods to pull and push values db
 
     public int getId() {
         return id;

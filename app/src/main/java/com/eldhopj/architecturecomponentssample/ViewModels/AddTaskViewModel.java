@@ -4,11 +4,11 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 
 import com.eldhopj.architecturecomponentssample.DataBase.AppDatabase;
-import com.eldhopj.architecturecomponentssample.DataBase.TaskDBModelClass;
+import com.eldhopj.architecturecomponentssample.DataBase.TaskDBEntity;
 
 public class AddTaskViewModel extends ViewModel { // We extends ViewModel instead of AndroidViewModel because we are using a factory
     /**We are using this ViewModel to cache our task entry objects wrapped in a live data object*/
-    private LiveData<TaskDBModelClass> task;
+    private LiveData<TaskDBEntity> task;
 
     // Note: The constructor should receive the database and the taskId
     public AddTaskViewModel(AppDatabase database, int taskId) {
@@ -16,7 +16,7 @@ public class AddTaskViewModel extends ViewModel { // We extends ViewModel instea
         task = database.taskDao().loadTaskById(taskId);
     }
 
-    public LiveData<TaskDBModelClass> getTask() {
+    public LiveData<TaskDBEntity> getTask() {
         return task;
     }
 }
